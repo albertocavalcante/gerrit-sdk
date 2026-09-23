@@ -94,9 +94,9 @@ func TestGetChangeDetail(t *testing.T) {
 		"revisions": map[string]any{
 			"abc123": map[string]any{
 				"files": map[string]any{
-					"/COMMIT_MSG":          map[string]any{},
-					"docs/run/build.mdx":   map[string]any{"lines_inserted": 5, "lines_deleted": 3},
-					"docs/query/lang.mdx":  map[string]any{"lines_inserted": 10, "lines_deleted": 8},
+					"/COMMIT_MSG":         map[string]any{},
+					"docs/run/build.mdx":  map[string]any{"lines_inserted": 5, "lines_deleted": 3},
+					"docs/query/lang.mdx": map[string]any{"lines_inserted": 10, "lines_deleted": 8},
 				},
 			},
 		},
@@ -127,7 +127,7 @@ func TestGetChangeDetail(t *testing.T) {
 
 func TestGetChangeFiles(t *testing.T) {
 	files := map[string]any{
-		"/COMMIT_MSG":              map[string]any{},
+		"/COMMIT_MSG":               map[string]any{},
 		"docs/extending/config.mdx": map[string]any{"status": "M", "lines_inserted": 5, "lines_deleted": 3},
 		"docs/run/build.mdx":        map[string]any{"status": "M", "lines_inserted": 10, "lines_deleted": 8},
 	}

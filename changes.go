@@ -132,6 +132,11 @@ type BuildQuery struct {
 }
 
 // NewQuery starts building a query.
+//
+// Deprecated: this module is unmaintained. The builder does not quote values,
+// so any value containing a space is silently split into two query terms, and
+// callers can inject arbitrary Gerrit operators through Project, Owner or File.
+// See the README.
 func NewQuery() *BuildQuery { return &BuildQuery{} }
 
 // Project restricts to a project.

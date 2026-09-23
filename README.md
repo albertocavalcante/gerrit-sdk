@@ -1,5 +1,45 @@
 # gerrit-sdk
 
+> [!CAUTION]
+> **Deprecated and unmaintained as of 2026-09-22. Do not use this module.**
+>
+> A successor that owns its own types is in progress; it is not yet published,
+> so there is no replacement path to point at yet. This notice will be updated
+> when there is one.
+>
+> The repository stays up, read-only, so that `v0.1.0` keeps resolving for
+> anyone who already depends on it. It is not being deleted and `v0.1.0` is not
+> retracted — it works, it is merely wrong in the ways listed below.
+>
+> **Known defects, any of which produces a silently wrong result:**
+>
+> 1. **Cross-host credential leak.** `parseGitCookies` matches with
+>    `strings.Contains(host, ".googlesource.com")` and returns the *first*
+>    googlesource credential in the file regardless of which host was asked for.
+>    With cookies for more than one review host, it sends the wrong identity to
+>    the wrong server.
+> 2. **`ParseGitCookiesForHost` fails on a stock Google `.gitcookies`.** It
+>    matches only `host` or `"."+host`, so the fleet-wide `.googlesource.com`
+>    line that Google actually issues never matches a specific review host. It
+>    also never inspects the cookie *name* and never checks expiry.
+> 3. **googlesource extensions are dropped.** `triplet_id`,
+>    `virtual_id_number` and `full_branch` are returned by googlesource and are
+>    absent from the underlying `go-gerrit` types, with no
+>    `DisallowUnknownFields`, so they vanish without an error.
+> 4. **`_more_changes` is discarded**, so a caller cannot tell a truncated
+>    result set from a complete one.
+> 5. **`NewClient` mutates the caller's `http.Client`.** Two clients built from
+>    one `http.Client` stack auth transports and send both credentials.
+> 6. **`NewAnonymousClient` accepts and silently ignores `WithAuth`** — directly
+>    contradicting the claim below that the SDK never silently falls back to
+>    unauthenticated access.
+> 7. **Nondeterministic output.** `GetChangeDetail`, `GetChangeFiles` and
+>    `ListProjects` build slices by ranging over a map, so ordering changes on
+>    every call.
+> 8. **The query builder does not quote values**, so `Project("my project")`
+>    silently becomes two query terms, and `file:` is documented as a prefix
+>    match when Gerrit treats it as exact — the example below returns nothing.
+
 A high-level Go client for [Gerrit Code Review](https://www.gerritcodereview.com/), with first-class support for [Googlesource.com](https://gerrit-review.googlesource.com/) instances.
 
 Built on top of [andygrunwald/go-gerrit](https://github.com/andygrunwald/go-gerrit), this SDK provides:

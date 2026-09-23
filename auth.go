@@ -9,12 +9,21 @@ import (
 )
 
 // AuthMethod configures how the client authenticates with Gerrit.
+//
+// Deprecated: this module is unmaintained. See the README.
 type AuthMethod interface {
 	apply(transport http.RoundTripper) (http.RoundTripper, error)
 }
 
 // GitCookiesAuth authenticates using a .gitcookies file,
 // the standard method for googlesource.com instances.
+//
+// Deprecated: this module is unmaintained, and this type is the worst defect in
+// it. Apply never receives the target host, so it calls parseGitCookies, which
+// returns the FIRST googlesource credential in the file regardless of which
+// host the request is for — it will send one review host's identity to another.
+// It also does no tilde expansion, so a literal "~/.gitcookies" Path fails to
+// open. See the README.
 type GitCookiesAuth struct {
 	Path string // path to .gitcookies file; empty = ~/.gitcookies
 }
@@ -106,6 +115,13 @@ func parseGitCookies(path string) (user, pass string, err error) {
 
 // ParseGitCookiesForHost reads a .gitcookies file and returns credentials
 // for the specified host.
+//
+// Deprecated: this module is unmaintained, and this function does not work on
+// the .gitcookies file Google actually issues. It matches only an exact host or
+// "."+host, so the fleet-wide ".googlesource.com" line never matches a specific
+// review host such as "chromium-review.googlesource.com". It also ignores the
+// includeSubdomains field, never inspects the cookie name, and never checks
+// expiry. See the README.
 func ParseGitCookiesForHost(path, host string) (user, pass string, err error) {
 	f, err := os.Open(path)
 	if err != nil {

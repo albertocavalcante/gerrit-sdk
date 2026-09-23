@@ -10,6 +10,9 @@ import (
 )
 
 // Client is a high-level Gerrit REST API client.
+//
+// Deprecated: this module is unmaintained and has known defects that produce
+// silently wrong results. See the README.
 type Client struct {
 	inner *gogerrit.Client
 	host  string
@@ -35,6 +38,10 @@ func WithAuth(a AuthMethod) Option {
 
 // NewClient creates a Gerrit client for the given host.
 // The host should be a bare hostname like "bazel-review.googlesource.com".
+//
+// Deprecated: this module is unmaintained. NewClient also mutates the
+// http.Client passed via WithHTTPClient, so two clients built from one
+// http.Client stack auth transports and send both credentials. See the README.
 func NewClient(ctx context.Context, host string, opts ...Option) (*Client, error) {
 	cfg := &clientConfig{}
 	for _, o := range opts {
@@ -67,6 +74,10 @@ func NewClient(ctx context.Context, host string, opts ...Option) (*Client, error
 
 // NewAnonymousClient creates an unauthenticated Gerrit client.
 // Only public endpoints will be accessible.
+//
+// Deprecated: this module is unmaintained. NewAnonymousClient also accepts and
+// silently discards WithAuth, so a caller who passes a credential here gets
+// anonymous requests with no error. See the README.
 func NewAnonymousClient(ctx context.Context, host string, opts ...Option) (*Client, error) {
 	cfg := &clientConfig{}
 	for _, o := range opts {
